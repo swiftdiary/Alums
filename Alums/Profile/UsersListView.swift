@@ -12,7 +12,7 @@ struct UsersListView: View {
     
     var body: some View {
         List(observable.users, id: \.user_id) { user in
-            Text(user.email)
+            Text("\(user.first_name) \(user.last_name)")
         }
         .navigationTitle("All Users")
         .task {

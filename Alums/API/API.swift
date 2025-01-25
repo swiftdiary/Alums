@@ -168,7 +168,7 @@ struct API {
         
         struct Parcel: Codable, Sendable {
             let parcel_id: Int
-            let parcel_geom: Data // TODO: GEO.
+            let parcel_geom: ParcelGeom
             let owner_name: String
             let mfy: String
             let district: String
@@ -193,7 +193,12 @@ struct API {
                 }
             }
             
-            init(parcel_id: Int, parcel_geom: Data, owner_name: String, mfy: String, district: String, region: String, kontur_number: Double, last_checked_on: Date?, farmer_crop_type: Crop?, classified_crop_type: Crop?, last_operator_crop_type: Crop?, last_operator: GetSingleUserResponse?, current_task: Int?, current_task_is_checked: Bool) {
+            struct ParcelGeom: Codable, Sendable {
+                let type: String
+                let coordinates: [[[Double]]]
+            }
+            
+            init(parcel_id: Int, parcel_geom: ParcelGeom, owner_name: String, mfy: String, district: String, region: String, kontur_number: Double, last_checked_on: Date?, farmer_crop_type: Crop?, classified_crop_type: Crop?, last_operator_crop_type: Crop?, last_operator: GetSingleUserResponse?, current_task: Int?, current_task_is_checked: Bool) {
                 self.parcel_id = parcel_id
                 self.parcel_geom = parcel_geom
                 self.owner_name = owner_name
@@ -308,9 +313,88 @@ struct API {
         }
     }
     
-    //
+    // POST /tasks
+    struct CreateTaskRequest: APIRequestable {
+        static let method: String = "POST"
+        var path: String
+        
+        var requested_from: Int
+        var data: RequestData
+        
+        struct RequestData: APIRequestData {
+            var name: String
+            var description: String
+            var worker_id: Int
+            var group_id: Int
+            var deadline_date: Date
+            var parcels: [Int]
+            
+            init(name: String, description: String, worker_id: Int, group_id: Int, deadline_date: Date, parcels: [Int]) {
+                self.name = name
+                self.description = description
+                self.worker_id = worker_id
+                self.group_id = group_id
+                self.deadline_date = deadline_date
+                self.parcels = parcels
+            }
+        }
+        
+        init(path: String = "/tasks", requested_from: Int, data: RequestData) {
+            self.path = path
+            self.requested_from = requested_from
+            self.data = data
+        }
+    }
     
+    // GET /tasks
+    struct GetTasksRequest: APIRequestable {
+        static let method: String = "GET"
+        var path: String
+        
+        var requested_from: Int
+        
+        init(path: String = "/tasks", requested_from: Int) {
+            self.path = path
+            self.requested_from = requested_from
+        }
+        
+    }
     
+    struct GetTasksResponse: APIResponsable {
+        let total: Int
+        var data: [TaskData]
+        
+        struct TaskData: Codable, Sendable {
+            let task_id: Int
+            let name: String
+            let description: String
+            let assignment_date: Date
+            let deadline_date: Date
+            let status: String
+            let worker: GetSingleUserResponse
+            let admin: GetSingleUserResponse
+            let group: GetSingleGroupResponse
+            let parcels: [GetParcelsResponse.Parcel]
+            
+            init(task_id: Int, name: String, description: String, assignment_date: Date, deadline_date: Date, status: String, worker: GetSingleUserResponse, admin: GetSingleUserResponse, group: GetSingleGroupResponse, parcels: [GetParcelsResponse.Parcel]) {
+                self.task_id = task_id
+                self.name = name
+                self.description = description
+                self.assignment_date = assignment_date
+                self.deadline_date = deadline_date
+                self.status = status
+                self.worker = worker
+                self.admin = admin
+                self.group = group
+                self.parcels = parcels
+            }
+        }
+        
+        init(total: Int, data: [TaskData]) {
+            self.total = total
+            self.data = data
+        }
+    }
 }
 
 protocol APIRequestable: Codable, Sendable {
