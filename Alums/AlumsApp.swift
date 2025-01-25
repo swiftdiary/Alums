@@ -9,9 +9,16 @@ import SwiftUI
 
 @main
 struct AlumsApp: App {
+    @AppStorage("user_id") private var userId: Int = 0
+    @AppStorage("user_role") private var userRole: String = ""
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            if userId != 0 {
+                ContentView()
+            } else {
+                AuthView()
+            }
         }
     }
 }

@@ -8,11 +8,19 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Environment(\.prefersTabNavigation) private var prefersTabNavigation
+    @State private var selection: AppScreen? = .home
+    
     var body: some View {
-        VStack {
-            Text("Hello ALUMS")
+        if prefersTabNavigation {
+            AppTabView(selection: $selection)
+        } else {
+            NavigationSplitView {
+                AppSidebarList(selection: $selection)
+            } detail: {
+                AppDetailColumn(screen: selection)
+            }
         }
-        .padding()
     }
 }
 
