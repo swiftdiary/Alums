@@ -27,6 +27,11 @@ struct ProfileView: View {
                     } label: {
                         Text("List of Users")
                     }
+                    NavigationLink {
+                        CreateGroupView()
+                    } label: {
+                        Text("Create New Group")
+                    }
 
                 }
             }

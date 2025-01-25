@@ -152,10 +152,10 @@ struct API {
         static let method: String = "GET"
         var path: String
         
-        var region: String?
-        var district: String?
+        var region: String
+        var district: String
         
-        init(path: String = "/parcels", region: String? = nil, district: String? = nil) {
+        init(path: String = "/parcels", region: String = "Region Name", district: String = "District Name") {
             self.path = path
             self.region = region
             self.district = district

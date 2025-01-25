@@ -40,7 +40,6 @@ extension MapObservable: CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        print(#function)
         if let location = locations.last {
             currentLocationOfUser = location.coordinate
             self.currentRegionOfUser = MKCoordinateRegion(

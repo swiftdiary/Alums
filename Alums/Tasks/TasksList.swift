@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct TasksList: View {
+    @State private var observable = TasksListObservable()
     @AppStorage("user_role") private var userRole: String = ""
     
     var body: some View {

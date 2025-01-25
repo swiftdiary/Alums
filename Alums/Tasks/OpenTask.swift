@@ -8,10 +8,18 @@
 import SwiftUI
 
 struct OpenTask: View {
+    @State private var observable: OpenTaskObservable
     let taskId: Int
     
+    init(taskId: Int) {
+        self.taskId = taskId
+        _observable = .init(wrappedValue: .init(taskId: taskId))
+    }
+    
     var body: some View {
-        Text("Open Task!")
+        List {
+            
+        }
     }
 }
 
