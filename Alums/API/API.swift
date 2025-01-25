@@ -9,7 +9,7 @@ import Foundation
 
 struct API {
     
-    static let baseURLString: String = "https://"
+    static let baseURLString: String = "https://alums-backend.onrender.com"
     
     struct PostAndPutResponse: APIResponsable {
         let message: String
@@ -23,7 +23,7 @@ struct API {
         static let method: String = "POST"
         var path: String                    // "/users"
         
-        let requestFrom: Int
+        let requested_from: Int
         let data: RequestData
         
         struct RequestData: APIRequestData {
@@ -44,9 +44,9 @@ struct API {
             }
         }
         
-        init(path: String = "/users", requestFrom: Int, data: RequestData) {
+        init(path: String = "/users", requested_from: Int, data: RequestData) {
             self.path = path
-            self.requestFrom = requestFrom
+            self.requested_from = requested_from
             self.data = data
         }
     }
@@ -168,7 +168,7 @@ struct API {
         
         struct Parcel: Codable, Sendable {
             let parcel_id: Int
-            let parcel_geom: Data
+            let parcel_geom: Data // TODO: GEO.
             let owner_name: String
             let mfy: String
             let district: String

@@ -14,11 +14,28 @@ struct ProfileView: View {
     
     var body: some View {
         List {
+            
+            if userRole == "admin" {
+                Section("Admin Options") {
+                    NavigationLink {
+                        CreateUserView()
+                    } label: {
+                        Text("Create New User")
+                    }
+                    NavigationLink {
+                        UsersListView()
+                    } label: {
+                        Text("List of Users")
+                    }
+
+                }
+            }
+            
             Section("User") {
-                Text("Full Name: ")
-                Text("Email: ")
-                Text("Role: ")
-                Text("Group ID: ")
+                Text("Full Name: \(observable.fullName)")
+                Text("Email: \(observable.email)")
+                Text("Role: \(observable.role)")
+                Text("Group ID: \(observable.groupId)")
             }
             Section("Log Out") {
                 Button("Log Out") {
@@ -27,6 +44,9 @@ struct ProfileView: View {
                 }
                 .foregroundStyle(.red)
             }
+        }
+        .task {
+            try? await observable.getUser()
         }
     }
 }

@@ -15,15 +15,14 @@ class AuthObservable {
     
     var userData: UserData? = nil
     
-    @ObservationIgnored private let webSession = SwiftWebSession(url: URL(string: "https://example.com")!)
-    
     func login() async throws {
+        let webSession = SwiftWebSession(url: URL(string: API.baseURLString)!)
         guard let id = Int(userIdInput) else { throw AuthenticationAuthError.invalidCredentials }
         let password = userPasswordInput
         let request = API.LoginRequest(user_id: id, password: password)
         let data = try JSONEncoder().encode(request)
         await webSession.setBody(data)
-        let response = try await webSession.executeRequestDecodable(decodingType: API.LoginResponse.self)
+        let response = try await webSession.executeRequestDecodable(decodingType: API.LoginResponse.self, path: request.path, method: API.LoginRequest.method)
         if response.status {
             userData = UserData(userId: id, userRole: response.role ?? "worker")
         }

@@ -22,9 +22,7 @@ struct AuthView: View {
                     Button("Log In") {
                         Task {
                             do {
-//                                try await observable.login()
-                                userRole = "admin"
-                                userId = 1
+                                try await observable.login()
                             } catch {
                                 print("Error: \(error)")
                             }
@@ -36,6 +34,7 @@ struct AuthView: View {
                 .textFieldStyle(.roundedBorder)
                 .padding()
             }
+            .scrollDismissesKeyboard(.immediately)
             .navigationTitle("Authentication")
         }
         .onChange(of: observable.userData) { oldValue, newValue in

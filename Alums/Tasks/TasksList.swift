@@ -8,10 +8,24 @@
 import SwiftUI
 
 struct TasksList: View {
+    @AppStorage("user_role") private var userRole: String = ""
     
     var body: some View {
         List {
-            Text("FEFEFEFE")
+            
+            NavigationLink(value: TaskNavigationItem.open(1)) {
+                Text("Hello.")
+            }
+        }
+        .navigationTitle(userRole == "worker" ? "TODO Tasks" : "Assigned Tasks")
+        .toolbar {
+            if userRole == "admin" {
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink(value: TaskNavigationItem.create) {
+                        Image(systemName: "plus.circle")
+                    }
+                }
+            }
         }
     }
 }

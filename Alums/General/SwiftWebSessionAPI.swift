@@ -15,7 +15,6 @@ public enum SwiftWebSessionError: Error {
 }
 
 public actor SwiftWebSession {
-    public var method: String
     public var url: URL
     
     public var headers: [String: String] = [:]
@@ -25,8 +24,7 @@ public actor SwiftWebSession {
     
     private var webSocketTask: URLSessionWebSocketTask?
     
-    public init(method: String = "GET", url: URL) {
-        self.method = method
+    public init(url: URL) {
         self.url = url
     }
     
@@ -38,12 +36,25 @@ public actor SwiftWebSession {
         self.body = body
     }
     
-    public func executeRequest() async throws -> (Data, URLResponse) {
+    public func executeRequest(path: String, method: String = "GET") async throws -> (Data, URLResponse) {
+        url.append(path: path)
         var request = URLRequest(url: url)
         request.httpMethod = method
         headers.forEach { request.setValue($1, forHTTPHeaderField: $0) }
+        
         request.httpBody = body
 
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        
+        // Debugging: Print request details
+        print("Request URL: \(request.url?.absoluteString ?? "")")
+        print("HTTP Method: \(request.httpMethod ?? "")")
+        print("Headers: \(request.allHTTPHeaderFields ?? [:])")
+        if let body = request.httpBody {
+            print("Request Body: \(String(data: body, encoding: .utf8) ?? "")")
+        }
+        
         let (data, response) = try await URLSession.shared.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
@@ -57,8 +68,8 @@ public actor SwiftWebSession {
         return (data, response)
     }
     
-    public func executeRequestDecodable<T: Decodable>(decodingType: T.Type) async throws -> T {
-        let (data, _) = try await executeRequest()
+    public func executeRequestDecodable<T: Decodable>(decodingType: T.Type, path: String = "", method: String = "GET") async throws -> T {
+        let (data, _) = try await executeRequest(path: path, method: method)
         return try JSONDecoder().decode(T.self, from: data)
     }
     

@@ -8,9 +8,14 @@
 import SwiftUI
 
 struct TasksNavigationStack: View {
+    @State private var navigation = TaskNavigationObservable()
+    
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigation.path) {
             TasksList()
+                .navigationDestination(for: TaskNavigationItem.self) { item in
+                    item.destination
+                }
         }
     }
 }
