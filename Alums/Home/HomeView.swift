@@ -8,8 +8,15 @@
 import SwiftUI
 
 struct HomeView: View {
+    
+    
     var body: some View {
-        Text("Hello, Home!")
+        List {
+            NavigationLink(value: HomeNavigationItem.map) {
+                Text("Open Map")
+            }
+        }
+        .navigationTitle("Main Dashboard")
     }
 }
 

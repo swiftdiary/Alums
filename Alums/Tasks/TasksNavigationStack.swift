@@ -13,6 +13,7 @@ struct TasksNavigationStack: View {
     var body: some View {
         NavigationStack(path: $navigation.path) {
             TasksList()
+                .environment(navigation)
                 .navigationDestination(for: TaskNavigationItem.self) { item in
                     item.destination
                 }

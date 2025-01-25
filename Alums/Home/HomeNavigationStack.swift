@@ -8,9 +8,15 @@
 import SwiftUI
 
 struct HomeNavigationStack: View {
+    @State private var navigation = HomeNavigationObservable()
+    
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigation.path) {
             HomeView()
+                .environment(navigation)
+                .navigationDestination(for: HomeNavigationItem.self) { item in
+                    item.destination
+                }
         }
     }
 }

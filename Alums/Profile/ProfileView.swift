@@ -45,6 +45,7 @@ struct ProfileView: View {
                 .foregroundStyle(.red)
             }
         }
+        .navigationTitle("Profile")
         .task {
             try? await observable.getUser()
         }
