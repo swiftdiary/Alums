@@ -36,8 +36,11 @@ public actor SwiftWebSession {
         self.body = body
     }
     
-    public func executeRequest(path: String, method: String = "GET") async throws -> (Data, URLResponse) {
+    public func executeRequest(path: String, method: String = "GET", queryItems: [URLQueryItem]) async throws -> (Data, URLResponse) {
         url.append(path: path)
+        if queryItems.count > 0 {
+            url.append(queryItems: queryItems)
+        }
         var request = URLRequest(url: url)
         request.httpMethod = method
         headers.forEach { request.setValue($1, forHTTPHeaderField: $0) }
@@ -68,8 +71,8 @@ public actor SwiftWebSession {
         return (data, response)
     }
     
-    public func executeRequestDecodable<T: Decodable>(decodingType: T.Type, path: String = "", method: String = "GET") async throws -> T {
-        let (data, _) = try await executeRequest(path: path, method: method)
+    public func executeRequestDecodable<T: Decodable>(decodingType: T.Type, path: String = "", method: String = "GET", queryItems: [URLQueryItem] = []) async throws -> T {
+        let (data, _) = try await executeRequest(path: path, method: method, queryItems: queryItems)
         return try JSONDecoder().decode(T.self, from: data)
     }
     

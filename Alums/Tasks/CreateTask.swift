@@ -27,6 +27,7 @@ struct CreateTask: View {
                         .tag(group.group_id)
                 }
             }
+            DatePicker("Deadline Date", selection: $observable.deadline_date)
             Section("Parcels") {
                 ForEach(observable.parcelsData, id: \.parcel_id) { parcel in
                     HStack {

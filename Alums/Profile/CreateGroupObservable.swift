@@ -17,7 +17,7 @@ class CreateGroupObservable {
     var groupCreated: Bool = false
     
     init() {
-        if let id = UserDefaults.standard.object(forKey: "id") as? Int {
+        if let id = UserDefaults.standard.object(forKey: "user_id") as? Int {
             self.requested_from = id
         } else {
             self.requested_from = 0

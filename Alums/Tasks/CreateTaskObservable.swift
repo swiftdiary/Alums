@@ -55,17 +55,19 @@ class CreateTaskObservable {
     
     func getParcels() async throws {
         let webSession = SwiftWebSession(url: URL(string: API.baseURLString)!)
-        let request = API.GetParcelsRequest()
-        let response = try await webSession.executeRequestDecodable(decodingType: API.GetParcelsResponse.self, path: request.path, method: API.GetParcelsRequest.method)
+        let request = API.GetParcelsRequest(path: "/parcels")
+        let response = try await webSession.executeRequestDecodable(decodingType: API.GetParcelsResponse.self, path: request.path, method: API.GetParcelsRequest.method, queryItems: [
+            .init(name: "region", value: "Region Name"),
+            .init(name: "district", value: "District Name")
+        ])
         await MainActor.run {
             self.parcelsData = response.data
-            
         }
     }
     
     func createTask() async throws {
         let webSession = SwiftWebSession(url: URL(string: API.baseURLString)!)
-        let requestData = API.CreateTaskRequest.RequestData(name: name, description: description, worker_id: worker_id, group_id: group_id, deadline_date: deadline_date, parcels: parcels)
+        let requestData = API.CreateTaskRequest.RequestData(name: name, description: description, worker_id: worker_id, group_id: group_id, deadline_date: deadline_date.ISO8601Format(), parcels: parcels)
         let request = API.CreateTaskRequest(requested_from: requested_from, data: requestData)
         let data = try JSONEncoder().encode(request)
         await webSession.setBody(data)

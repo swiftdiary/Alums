@@ -152,13 +152,8 @@ struct API {
         static let method: String = "GET"
         var path: String
         
-        var region: String
-        var district: String
-        
-        init(path: String = "/parcels", region: String = "Region Name", district: String = "District Name") {
+        init(path: String = "/parcels") {
             self.path = path
-            self.region = region
-            self.district = district
         }
     }
     
@@ -168,13 +163,13 @@ struct API {
         
         struct Parcel: Codable, Sendable {
             let parcel_id: Int
-            let parcel_geom: ParcelGeom
+            let parcel_geom: String
             let owner_name: String
             let mfy: String
             let district: String
             let region: String
             let kontur_number: Double
-            let last_checked_on: Date?
+            let last_checked_on: String
             let farmer_crop_type: Crop?
             let classified_crop_type: Crop?
             let last_operator_crop_type: Crop?
@@ -198,22 +193,22 @@ struct API {
                 let coordinates: [[[Double]]]
             }
             
-            init(parcel_id: Int, parcel_geom: ParcelGeom, owner_name: String, mfy: String, district: String, region: String, kontur_number: Double, last_checked_on: Date?, farmer_crop_type: Crop?, classified_crop_type: Crop?, last_operator_crop_type: Crop?, last_operator: GetSingleUserResponse?, current_task: Int?, current_task_is_checked: Bool) {
-                self.parcel_id = parcel_id
-                self.parcel_geom = parcel_geom
-                self.owner_name = owner_name
-                self.mfy = mfy
-                self.district = district
-                self.region = region
-                self.kontur_number = kontur_number
-                self.last_checked_on = last_checked_on
-                self.farmer_crop_type = farmer_crop_type
-                self.classified_crop_type = classified_crop_type
-                self.last_operator_crop_type = last_operator_crop_type
-                self.last_operator = last_operator
-                self.current_task = current_task
-                self.current_task_is_checked = current_task_is_checked
-            }
+//            init(parcel_id: Int, parcel_geom: ParcelGeom, owner_name: String, mfy: String, district: String, region: String, kontur_number: Double, last_checked_on: Date?, farmer_crop_type: Crop?, classified_crop_type: Crop?, last_operator_crop_type: Crop?, last_operator: GetSingleUserResponse?, current_task: Int?, current_task_is_checked: Bool) {
+//                self.parcel_id = parcel_id
+//                self.parcel_geom = parcel_geom
+//                self.owner_name = owner_name
+//                self.mfy = mfy
+//                self.district = district
+//                self.region = region
+//                self.kontur_number = kontur_number
+//                self.last_checked_on = last_checked_on
+//                self.farmer_crop_type = farmer_crop_type
+//                self.classified_crop_type = classified_crop_type
+//                self.last_operator_crop_type = last_operator_crop_type
+//                self.last_operator = last_operator
+//                self.current_task = current_task
+//                self.current_task_is_checked = current_task_is_checked
+//            }
         }
         
         init(total: Int, data: [Parcel]) {
@@ -326,10 +321,10 @@ struct API {
             var description: String
             var worker_id: Int
             var group_id: Int
-            var deadline_date: Date
+            var deadline_date: String
             var parcels: [Int]
             
-            init(name: String, description: String, worker_id: Int, group_id: Int, deadline_date: Date, parcels: [Int]) {
+            init(name: String, description: String, worker_id: Int, group_id: Int, deadline_date: String, parcels: [Int]) {
                 self.name = name
                 self.description = description
                 self.worker_id = worker_id
