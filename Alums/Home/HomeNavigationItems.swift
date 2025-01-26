@@ -16,6 +16,10 @@ class HomeNavigationObservable {
 
 enum HomeNavigationItem: Hashable, Identifiable {
     case map
+    case regions
+    case districts
+    case region(Int)
+    case district(Int)
     
     var id: HomeNavigationItem { self }
     
@@ -23,6 +27,10 @@ enum HomeNavigationItem: Hashable, Identifiable {
     var destination: some View {
         switch self {
         case .map: MapScreen()
+        case .regions: RegionsView()
+        case .districts: DistrictsView()
+        case .region(let regionId): SelectedRegionView(regionId: regionId)
+        case .district(let districtId): SelectedDistrictView(districtId: districtId)
         }
     }
 }

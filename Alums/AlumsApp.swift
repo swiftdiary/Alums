@@ -11,13 +11,27 @@ import SwiftUI
 struct AlumsApp: App {
     @AppStorage("user_id") private var userId: Int = 0
     @AppStorage("user_role") private var userRole: String = ""
+    @State private var localData = LocalDataManager()
     
     var body: some Scene {
         WindowGroup {
-            if userId != 0 {
-                ContentView()
-            } else {
-                AuthView()
+            Group {
+                if localData.loaded {
+                    if userId != 0 {
+                        ContentView()
+                    } else {
+                        AuthView()
+                    }
+                } else {
+                    VStack {
+                        ProgressView()
+                        Text("Loading all regions and districts")
+                    }
+                }
+            }
+            .environment(localData)
+            .onAppear {
+                self.localData.loadLocalData()
             }
         }
     }
