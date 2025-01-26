@@ -23,6 +23,15 @@ class MapObservable: NSObject {
     var fromSelectedDistrictId: Int = 0
     var fromSelectedRegionId: Int = 0
     
+    var selectedRegion: CurrentlyAvailableRegion = .namangan
+    var selectedDistrict: CurrentlyAvailableDistrict = .chortoq
+    
+    var parcelsData: [API.GetParcelsResponse.Parcel] = []
+    
+    var parsedData: [API.GetParcelsResponse.Parcel.ParcelGeom] = []
+    
+    var parsedDataWithCropId: [API.GetParcelsResponse.Parcel.ParcelGeomWithCropId] = []
+    
     init(fromSelectedDistrictId: Int, fromSelectedRegionId: Int) {
         super.init()
         if fromSelectedRegionId > 0 || fromSelectedDistrictId > 0 {
@@ -76,6 +85,30 @@ class MapObservable: NSObject {
         
         // Create MKPolygon with exterior and interior rings
         return MKPolygon(coordinates: exterior, count: exterior.count, interiorPolygons: interiorPolygons)
+    }
+    
+    func getParcels() async throws {
+        let webSession = SwiftWebSession(url: URL(string: API.baseURLString)!)
+        let request = API.GetParcelsRequest(path: "/parcels")
+        let response = try await webSession.executeRequestDecodable(decodingType: API.GetParcelsResponse.self, path: request.path, method: API.GetParcelsRequest.method, queryItems: [
+            .init(name: "region", value: selectedRegion.title),
+            .init(name: "district", value: selectedDistrict.title)
+        ])
+        await MainActor.run {
+            self.parcelsData = response.data
+        }
+    }
+    
+    func parseParcelsData() async throws {
+        for parcel in parcelsData {
+            let stringToDecode = parcel.parcel_geom
+            let decodedParcelGeom: API.GetParcelsResponse.Parcel.ParcelGeom = try JSONDecoder().decode(API.GetParcelsResponse.Parcel.ParcelGeom.self, from: stringToDecode.data(using: .utf8) ?? Data())
+            await MainActor.run {
+                self.parsedData.append(decodedParcelGeom)
+                let parcelWithCropId: API.GetParcelsResponse.Parcel.ParcelGeomWithCropId = .init(geom: decodedParcelGeom, crop_id: parcel.classified_crop_type?.crop_id ?? 4)
+                self.parsedDataWithCropId.append(parcelWithCropId)
+            }
+        }
     }
 }
 

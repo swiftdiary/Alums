@@ -28,6 +28,20 @@ struct CreateTask: View {
                 }
             }
             DatePicker("Deadline Date", selection: $observable.deadline_date)
+            Section("Region&District") {
+                Picker("Region", selection: $observable.selectedRegion) {
+                    ForEach(CurrentlyAvailableRegion.allCases) { region in
+                        Text(region.title)
+                            .tag(region)
+                    }
+                }
+                Picker("District", selection: $observable.selectedDistrict) {
+                    ForEach(observable.selectedRegion.regionDistricts) { district in
+                        Text(district.title)
+                            .tag(district)
+                    }
+                }
+            }
             Section("Parcels") {
                 ForEach(observable.parcelsData, id: \.parcel_id) { parcel in
                     HStack {
@@ -66,6 +80,14 @@ struct CreateTask: View {
                 }
             }
         }
+        .onChange(of: observable.selectedRegion, { _, _ in
+            observable.selectedDistrict = observable.selectedRegion.regionDistricts.first ?? CurrentlyAvailableDistrict.chortoq
+        })
+        .onChange(of: observable.selectedDistrict, { _, _ in
+            Task {
+                try? await observable.getParcels()
+            }
+        })
         .onChange(of: observable.taskCreated, { oldValue, newValue in
             if newValue {
                 dismiss()

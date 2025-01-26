@@ -51,9 +51,32 @@ struct AppMapView: UIViewRepresentable {
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
             if let polygon = overlay as? MKPolygon {
                 let renderer = MKPolygonRenderer(polygon: polygon)
-                renderer.fillColor = UIColor.systemBlue.withAlphaComponent(0.3)
-                renderer.strokeColor = UIColor.systemBlue
-                renderer.lineWidth = 2
+                if polygon.subtitle == "0" {
+                    renderer.fillColor = UIColor.white.withAlphaComponent(0.3)
+                    renderer.strokeColor = UIColor.systemGreen
+                    renderer.lineWidth = 1
+                }
+                if polygon.subtitle == "1" {
+                    renderer.fillColor = UIColor.yellow.withAlphaComponent(0.3)
+                    renderer.strokeColor = UIColor.systemYellow
+                    renderer.lineWidth = 1
+                }
+                if polygon.subtitle == "2" {
+                    renderer.fillColor = UIColor.systemBlue.withAlphaComponent(0.3)
+                    renderer.strokeColor = UIColor.systemBlue
+                    renderer.lineWidth = 1
+                }
+                if polygon.subtitle == "3" {
+                    renderer.fillColor = UIColor.systemGray.withAlphaComponent(0.3)
+                    renderer.strokeColor = UIColor.systemGray
+                    renderer.lineWidth = 1
+                }
+                if polygon.subtitle == "4" {
+                    renderer.fillColor = UIColor.systemRed.withAlphaComponent(0.3)
+                    renderer.strokeColor = UIColor.systemRed
+                    renderer.lineWidth = 1
+                }
+                
                 return renderer
             }
             return MKOverlayRenderer(overlay: overlay)

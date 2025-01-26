@@ -169,7 +169,7 @@ struct API {
             let district: String
             let region: String
             let kontur_number: Double
-            let last_checked_on: String
+            let last_checked_on: String?
             let farmer_crop_type: Crop?
             let classified_crop_type: Crop?
             let last_operator_crop_type: Crop?
@@ -191,6 +191,18 @@ struct API {
             struct ParcelGeom: Codable, Sendable {
                 let type: String
                 let coordinates: [[[Double]]]
+            }
+            
+            struct ParcelGeomWithCropId: Codable, Sendable {
+                let type: String
+                let coordinates: [[[Double]]]
+                let crop_id: Int
+                
+                init(geom: ParcelGeom, crop_id: Int) {
+                    self.type = geom.type
+                    self.coordinates = geom.coordinates
+                    self.crop_id = crop_id
+                }
             }
             
 //            init(parcel_id: Int, parcel_geom: ParcelGeom, owner_name: String, mfy: String, district: String, region: String, kontur_number: Double, last_checked_on: Date?, farmer_crop_type: Crop?, classified_crop_type: Crop?, last_operator_crop_type: Crop?, last_operator: GetSingleUserResponse?, current_task: Int?, current_task_is_checked: Bool) {

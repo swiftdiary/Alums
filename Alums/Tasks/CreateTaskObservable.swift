@@ -18,6 +18,9 @@ class CreateTaskObservable {
     var deadline_date: Date = .now
     var parcels: [Int] = []
     
+    var selectedRegion: CurrentlyAvailableRegion = .namangan
+    var selectedDistrict: CurrentlyAvailableDistrict = .chortoq
+    
     var workers: [API.GetSingleUserResponse] = []
     var groups: [API.GetSingleGroupResponse] = []
     var parcelsData: [API.GetParcelsResponse.Parcel] = []
@@ -57,8 +60,8 @@ class CreateTaskObservable {
         let webSession = SwiftWebSession(url: URL(string: API.baseURLString)!)
         let request = API.GetParcelsRequest(path: "/parcels")
         let response = try await webSession.executeRequestDecodable(decodingType: API.GetParcelsResponse.self, path: request.path, method: API.GetParcelsRequest.method, queryItems: [
-            .init(name: "region", value: "Region Name"),
-            .init(name: "district", value: "District Name")
+            .init(name: "region", value: selectedRegion.title),
+            .init(name: "district", value: selectedDistrict.title)
         ])
         await MainActor.run {
             self.parcelsData = response.data
@@ -75,6 +78,51 @@ class CreateTaskObservable {
         print("Successfully created a new Task\nMessage: \(response.message)")
         await MainActor.run {
             self.taskCreated = true
+        }
+    }
+}
+
+enum CurrentlyAvailableRegion: Identifiable, Hashable, CaseIterable {
+    case namangan
+    case navaiy
+    
+    var title: String {
+        switch self {
+        case .namangan: "Namangan"
+        case .navaiy: "Navoiy"
+        }
+    }
+    
+    var regionDistricts: [CurrentlyAvailableDistrict] {
+        switch self {
+        case .namangan: [.chortoq, .chust, .pop]
+        case .navaiy: [.navbaxor, .xatirchi, .nurota]
+        }
+    }
+    
+    var id: CurrentlyAvailableRegion { self }
+}
+
+enum CurrentlyAvailableDistrict: Identifiable, Hashable {
+    
+    case chortoq
+    case chust
+    case pop
+    
+    case navbaxor
+    case xatirchi
+    case nurota
+    
+    var id: CurrentlyAvailableDistrict { self }
+    
+    var title: String {
+        switch self {
+        case .chortoq: "Chortoq"
+        case .chust: "Chust"
+        case .navbaxor: "Navbaxor"
+        case .xatirchi: "Xatirchi"
+        case .nurota: "Nurota"
+        case .pop: "Pop"
         }
     }
 }

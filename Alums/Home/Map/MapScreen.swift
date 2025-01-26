@@ -23,6 +23,37 @@ struct MapScreen: View {
     var body: some View {
         VStack {
             AppMapView(polygons: observable.polygons, observable: $observable)
+                .safeAreaInset(edge: .bottom, content: {
+                    VStack {
+                        Picker("Region", selection: $observable.selectedRegion) {
+                            ForEach(CurrentlyAvailableRegion.allCases) { region in
+                                Text(region.title)
+                                    .tag(region)
+                            }
+                        }
+                        Picker("District", selection: $observable.selectedDistrict) {
+                            ForEach(observable.selectedRegion.regionDistricts) { district in
+                                Text(district.title)
+                                    .tag(district)
+                            }
+                        }
+                        Button("Submit") {
+                            Task {
+                                try? await observable.getParcels()
+                                try? await observable.parseParcelsData()
+                                for parcel in observable.parsedDataWithCropId {
+                                    if let polygon = observable.createPolygon(from: parcel.coordinates) {
+                                        polygon.subtitle = "\(parcel.crop_id)"
+                                        observable.polygons.append(polygon)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .onChange(of: observable.selectedRegion) { oldValue, newValue in
+                        observable.selectedDistrict = newValue.regionDistricts.first ?? .chust
+                    }
+                })
                 .onAppear(perform: {
                     if fromSelectedRegionId > 0 {
                         guard let region = localDataManager.localDataRegions?.features.first(where: {$0.id == fromSelectedRegionId}) else { return }
