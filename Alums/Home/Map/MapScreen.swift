@@ -24,32 +24,47 @@ struct MapScreen: View {
         VStack {
             AppMapView(polygons: observable.polygons, observable: $observable)
                 .safeAreaInset(edge: .bottom, content: {
-                    VStack {
-                        Picker("Region", selection: $observable.selectedRegion) {
-                            ForEach(CurrentlyAvailableRegion.allCases) { region in
-                                Text(region.title)
-                                    .tag(region)
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Picker("Region", selection: $observable.selectedRegion) {
+                                ForEach(CurrentlyAvailableRegion.allCases) { region in
+                                    Text(region.title)
+                                        .tag(region)
+                                }
                             }
-                        }
-                        Picker("District", selection: $observable.selectedDistrict) {
-                            ForEach(observable.selectedRegion.regionDistricts) { district in
-                                Text(district.title)
-                                    .tag(district)
+                            Picker("District", selection: $observable.selectedDistrict) {
+                                ForEach(observable.selectedRegion.regionDistricts) { district in
+                                    Text(district.title)
+                                        .tag(district)
+                                }
                             }
-                        }
-                        Button("Submit") {
-                            Task {
-                                try? await observable.getParcels()
-                                try? await observable.parseParcelsData()
-                                for parcel in observable.parsedDataWithCropId {
-                                    if let polygon = observable.createPolygon(from: parcel.coordinates) {
-                                        polygon.subtitle = "\(parcel.crop_id)"
-                                        observable.polygons.append(polygon)
+                            Button("Submit") {
+                                Task {
+                                    try? await observable.getParcels()
+                                    try? await observable.parseParcelsData()
+                                    for parcel in observable.parsedDataWithCropId {
+                                        if let polygon = observable.createPolygon(from: parcel.coordinates) {
+                                            polygon.subtitle = "\(parcel.crop_id)"
+                                            observable.polygons.append(polygon)
+                                        }
                                     }
                                 }
                             }
                         }
+                        VStack(alignment: .leading) {
+                            Label("Cotton", systemImage: "circle.fill")
+                                .foregroundStyle(Color.green)
+                            Label("Corn", systemImage: "circle.fill")
+                                .foregroundStyle(Color.yellow)
+                            Label("Garden", systemImage: "circle.fill")
+                                .foregroundStyle(Color.blue)
+                            Label("Others", systemImage: "circle.fill")
+                                .foregroundStyle(Color.gray)
+                            Label("Not classified yet", systemImage: "circle.fill")
+                                .foregroundStyle(Color.red)
+                        }
                     }
+                    .padding()
                     .onChange(of: observable.selectedRegion) { oldValue, newValue in
                         observable.selectedDistrict = newValue.regionDistricts.first ?? .chust
                     }
